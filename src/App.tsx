@@ -4,11 +4,22 @@ import Navigation from './common/components/Navigation';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
-import GameBoard from './pages/Game/GameBoard';
+import Game from './pages/game/Game';
+import { createGlobalStyle } from 'styled-components';
+import GameBoard from './pages/game/GameBoard';
+
+export const GlobalStyle = createGlobalStyle`
+  *{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+`;
 
 function App() {
   return (
     <div className="App">
+       <GlobalStyle/>
        <Navigation/>
        <Routes>
           <Route path="/" element={<Home/>}/>

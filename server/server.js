@@ -11,3 +11,6 @@ const PORT = 4000;
 app.listen(PORT, () => {
     console.log(`Server run : http://localhost:${PORT}/`)
 })
+
+
+//나중에 server 폴더를 다른 '비주얼 스튜디오 코드'에서 실행하고, package.json 시작파일을 건듦

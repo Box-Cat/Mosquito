@@ -14,10 +14,18 @@ const Navigation = () => {
                 style={{ maxHeight: '100px' }}
                 navbarScroll
               >
-                <Nav.Link href="#action1">Home</Nav.Link>
-                <Nav.Link href="#action2">게임</Nav.Link>
-                <Nav.Link href="#action2">랭킹</Nav.Link>
-                <Nav.Link href="#action2">공략</Nav.Link>
+                <Nav.Link as={Link} to="/">
+                  home
+                </Nav.Link>
+                <Nav.Link as={Link} to="/game">
+                  게임
+                </Nav.Link>
+                <Nav.Link as={Link} to="/">
+                  랭킹
+                </Nav.Link>
+                <Nav.Link as={Link} to="/">
+                  모기 게시판
+                </Nav.Link>
               </Nav>
               <Form className="d-flex">
                 <Form.Control
