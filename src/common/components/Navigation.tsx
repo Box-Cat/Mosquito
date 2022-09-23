@@ -20,7 +20,7 @@ const Navigation = () => {
                 <Nav.Link as={Link} to="/game">
                   게임
                 </Nav.Link>
-                <Nav.Link as={Link} to="/">
+                <Nav.Link as={Link} to="/balls">
                   랭킹
                 </Nav.Link>
                 <Nav.Link as={Link} to="/">

@@ -1,6 +1,7 @@
-//이 녀석이 원판.
-
 import React,  { useEffect } from 'react';
+import imgMosquito from './images/mosquito1.png';
+
+//이 녀석의 값만 바꿔서 만들자
 
 const Balls = () => {
  const onStart = () =>{ // 스크립트 로딩이 완료된 후부터 내용을 시작
@@ -8,12 +9,13 @@ const Balls = () => {
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    let mosquitoImage = new Image(); 
+    mosquitoImage.src = imgMosquito;
     
     class Ball{
       constructor(x,y){ // ball의 기본 속성들을 정의
         this.x = x;
         this.y = y;
-        this.c = 'rgba('+Math.random()*255+','+Math.random()*255+','+Math.random()*255+')'; 
    // 시작할때 공의 색깔을 랜덤하게 설정. 이거 많이 사용하게 된다.
         this.size = 30; // 공의 반지름
         this.angle = (Math.random()*(Math.PI*2)); // 공이 출발할 각도
@@ -33,11 +35,12 @@ const Balls = () => {
         }
       }
       draw(){ // 넘어온 속성값대로 캔버스에 원을 그려주는 함수
-         ctx.fillStyle= this.c;
-         ctx.beginPath();
-         ctx.arc(this.x, this.y, this.size, 0, Math.PI*2, true);
-         ctx.closePath();
-         ctx.fill();
+        //  ctx.fillStyle= this.c;
+        //  ctx.beginPath();
+        //  ctx.arc(this.x, this.y, this.size, 0, Math.PI*2, true);
+        //  ctx.closePath();
+        //  ctx.fill();
+         ctx.drawImage(mosquitoImage, this.x, this.y); 
       }
     }
 
@@ -65,7 +68,7 @@ const Balls = () => {
       })
       requestAnimationFrame(animate);
     }
-    const ballNumber = 5 //원하는 공의 갯수 설정
+    const ballNumber = 30 //원하는 공의 갯수 설정
     init(); // 공의 초기 좌표를 설정하고,
     animate(); // 프레임마다 공을 그려준다.
     }

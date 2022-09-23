@@ -7,6 +7,7 @@ import Home from './pages/Home';
 import Game from './pages/game/Game';
 import { createGlobalStyle } from 'styled-components';
 import GameBoard from './pages/game/GameBoard';
+import Balls from './pages/game/Balls';
 
 export const GlobalStyle = createGlobalStyle`
   *{
@@ -24,6 +25,7 @@ function App() {
        <Routes>
           <Route path="/" element={<Home/>}/>
           <Route path="/game" element={<GameBoard/>}/>
+          <Route path="/balls" element={<Balls/>}/>
        </Routes>
     </div>
   );

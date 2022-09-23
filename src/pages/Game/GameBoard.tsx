@@ -1,9 +1,10 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import StartButton from './StartButton';
 import Timer from './Timer';
 import Score from './Score';
 import imgMosquito from './images/mosquito1.png';
 
+// useEffect를 2개 만들고 첫번째 useEffect에서 useState로 arrX를 채운다
 interface CanvasProps {
     width: number;
     height: number;
@@ -11,75 +12,54 @@ interface CanvasProps {
 
 const GameBoard = ({ width, height }: CanvasProps) => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
-    //let x : number = Math.floor(Math.random()*(800-92)); 
-    //let y : number = Math.floor(Math.random()*(600-90));
+    
+    let mosquitoImage = new Image(); //나중에 배열로 바꿔서, 여러 그림 넣기
+    mosquitoImage.src = imgMosquito;
+    let mosquitoWidth = 84; //그림 크기 
+    let mosquitoHeight = 84;
+    let x : number = Math.floor(Math.random()*(width-mosquitoWidth)); //모기 시작 위치 랜덤으로 구현  0과 800에서 시작. 800에서 시작이면, 그림이 넘어감.
+    let y : number = Math.floor(Math.random()*(height-mosquitoHeight));
+    let directionX = Math.floor(Math.random()*2-1)>=0?1:-1; //모기 비행 방향
+    let directionY = Math.floor(Math.random()*2-1)>=0?1:-1;  
+    let dx = directionX*(Math.floor(Math.random()*10)); //모기 비행 속도
+    let dy = directionY*(Math.floor(Math.random()*10)); 
+    
+    let arrX : number[];
+    let arrY : number[];
+    
+    let mosquitoNumber : number = 5; //원하는 모기수 설정
+    let mosquitoes =[]
 
-    const genMosquito = () => {
-        let mosquitoImage = new Image();
-        mosquitoImage.src = imgMosquito;
-    }
-
-    useEffect(() => {
+    const draw = (x:number,y:number) => {
         const canvas = canvasRef.current;
         if (!canvas) return;
         const context = canvas.getContext('2d');
         if (!context) return;
+        context.drawImage(mosquitoImage, x, y);   //문제는 새로운 x,y값을 어떻게 넣는 가이다.
+    }
 
-        let mosquitoImage = new Image();
-        mosquitoImage.src = imgMosquito;
-        //let x = width/2;
-        //let y = height/2;
-        let mosquitoWidth = 84; //그림 크기
-        let mosquitoHeight = 84;
-        let x = Math.floor(Math.random()*(width-mosquitoWidth)); //모기 시작 위치 랜덤으로 구현  0과 800에서 시작. 800에서 시작이면, 그림이 넘어감.
-        let y = Math.floor(Math.random()*(height-mosquitoHeight));
-        var dz = Math.floor(Math.random()*2-1); //모기 시작 방향 랜덤으로 구현
-        var dx = dz>=0?2:-2; 
-        var dy = dz>=0?2:-2;
+    const coordinate = () => { //반목문 + 모기마리수 파라미터
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const context = canvas.getContext('2d');
+        if (!context) return;
+        context.clearRect(0, 0, width, height);
+        if (y + dy >= height - mosquitoHeight || y + dy < -1 ) {
+            dy *= -1;
+        }else if(x + dx >= width - mosquitoWidth || x + dx < -1){
+            dx *= -1;
+        } 
+        x += dx;
+        y += dy;
+        //문제는 새로운 x,y값을 어떻게 넣는 가 이다.
+        draw(x,y);
+      
+    }
 
-        const mosquitoNumber : number = 5; //원하는 모기수 설정
-        const draw = () => { //반목문 + 모기마리수 파라미터
-            context.clearRect(0, 0, width, height);
+    useEffect(() => {
+        setInterval(coordinate, 1000 / 60); 
+    }, [x,y])
 
-            if (y + dy >= height - mosquitoHeight || y + dy < -1 ) {
-                dy *= -1;
-            }else if(x + dx >= width - mosquitoWidth || x + dx < -1){
-                dx *= -1;
-            } 
-
-            x += dx;
-            y += dy;
-
-
-            ////모기의 랜덤 이동 구현///
-            let i:number = 0;
-            while(i<mosquitoNumber){
-                context.drawImage(mosquitoImage, x, y); //겹쳐서 안 보이는 듯
-                i++;
-            }
-            console.log("dz",dz); //랜덤 위치를 추가하고, 바닥을 기는 모기가 캔버스 밖을 나감            
-            console.log("x",x); //랜덤 위치를 추가하고, 바닥을 기는 모기가 캔버스 밖을 나감            
-            console.log("y",y);            
-          
-
-        }
-
-        // const init = () => { // 그려질 공의 개체를 설정하는 함수 
-        //     for(let i=0; i<ballNumber; i++){
-        //       //balls[i] = new Ball(canvas.width*0.5, canvas.height*0.5)
-
-        //      }
-        //   }
-        // function createBalls(){
-        //     const interval = setInterval(function(){
-        //         let e = new Enemy()
-        //         e.init()
-        //     },1000)
-        // }
-
-
-        setInterval(draw, 1000 / 60);
-    }, [])
     //1.로그인을 해야만, 게임을 할 수 있게 할 것
     //2.랜덤으로 움직이는 모기 30마리로 시작할 것
     //3.모기를 클릭하면, 모기의 눈이 X로 변할 것.
