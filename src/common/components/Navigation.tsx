@@ -20,11 +20,14 @@ const Navigation = () => {
                 <Nav.Link as={Link} to="/game">
                   게임
                 </Nav.Link>
-                <Nav.Link as={Link} to="/balls">
+                <Nav.Link as={Link} to="/">
                   랭킹
                 </Nav.Link>
                 <Nav.Link as={Link} to="/">
                   모기 게시판
+                </Nav.Link>
+                <Nav.Link as={Link} to="/">
+                  바닐라 자스 볼
                 </Nav.Link>
               </Nav>
               <Form className="d-flex">

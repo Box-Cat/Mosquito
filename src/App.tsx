@@ -6,8 +6,6 @@ import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Game from './pages/game/Game';
 import { createGlobalStyle } from 'styled-components';
-import GameBoard from './pages/game/GameBoard';
-import Balls from './pages/game/Balls';
 
 export const GlobalStyle = createGlobalStyle`
   *{
@@ -24,8 +22,7 @@ function App() {
        <Navigation/>
        <Routes>
           <Route path="/" element={<Home/>}/>
-          <Route path="/game" element={<GameBoard/>}/>
-          <Route path="/balls" element={<Balls/>}/>
+          <Route path="/game" element={<Game/>}/>
        </Routes>
     </div>
   );
