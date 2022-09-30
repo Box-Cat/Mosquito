@@ -6,7 +6,7 @@ const Navigation = () => {
     return (
         <Navbar bg="light" expand="lg">
           <Container fluid>
-            <Navbar.Brand href="#">HOME</Navbar.Brand>
+            <Navbar.Brand as={Link} to="/">HOME</Navbar.Brand>
             <Navbar.Toggle aria-controls="navbarScroll" />
             <Navbar.Collapse id="navbarScroll">
               <Nav
@@ -14,10 +14,7 @@ const Navigation = () => {
                 style={{ maxHeight: '100px' }}
                 navbarScroll
               >
-                <Nav.Link as={Link} to="/">
-                  home
-                </Nav.Link>
-                <Nav.Link as={Link} to="/game">
+                <Nav.Link href="/game">
                   게임
                 </Nav.Link>
                 <Nav.Link as={Link} to="/">
@@ -25,9 +22,6 @@ const Navigation = () => {
                 </Nav.Link>
                 <Nav.Link as={Link} to="/">
                   모기 게시판
-                </Nav.Link>
-                <Nav.Link as={Link} to="/">
-                  바닐라 자스 볼
                 </Nav.Link>
               </Nav>
               <Form className="d-flex">
