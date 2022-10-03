@@ -4,8 +4,8 @@ import Navigation from './common/components/Navigation';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
-import Game from './pages/game/Game';
-import { createGlobalStyle } from 'styled-components';
+import Game from './pages/Game/Game';
+import { createGlobalStyle } from "styled-components";
 
 export const GlobalStyle = createGlobalStyle`
   *{
