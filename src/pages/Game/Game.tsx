@@ -117,12 +117,13 @@ const Game = () => {
       console.log("figuresArray",figuresArray);
       newFiguresArray = figuresArray.filter(
         (figure: any) =>
-          !(
-            mouseCoordinate.x > figure.x &&
-            mouseCoordinate.x < figure.x + figure.size &&
-            mouseCoordinate.y > figure.y &&
-            mouseCoordinate.y < figure.y + figure.size
-          )
+          // !(
+          //   mouseCoordinate.x > figure.x &&
+          //   mouseCoordinate.x < figure.x + figure.size &&
+          //   mouseCoordinate.y > figure.y &&
+          //   mouseCoordinate.y < figure.y + figure.size
+          // )
+          {}
       );
       if (newFiguresArray.length < figuresArray.length) {
         count += figuresArray.length - newFiguresArray.length;
