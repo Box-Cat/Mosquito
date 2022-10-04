@@ -13,6 +13,7 @@ const Game = () => {
   //const height: number = 800;
   const width = window.innerWidth;
   const height = window.innerHeight;
+  const size = 0; //삭제 예정
 
   const onStart = () => {
     const canvas = canvasRef.current;
@@ -29,6 +30,7 @@ const Game = () => {
     deathImage.src = imgDeath;
     gameoverImage.src = imgGameover;
 
+
     //추가▽
     let gameover = true;
     let figuresArray: any = [];
@@ -38,6 +40,7 @@ const Game = () => {
       x: NaN,
       y: NaN,
     };
+    const clicker : any= [];      
     //추가△
 
     class Mosquito {
@@ -49,6 +52,7 @@ const Game = () => {
       directionY: number;
       dx: number;
       dy: number;
+ 
 
       constructor() {
         this.mosquitoWidth = 84;
@@ -82,6 +86,12 @@ const Game = () => {
         //모기 그리기
         if (!ctx) return;
         ctx.drawImage(mosquitoImage, this.x, this.y);
+
+        //노란 점 찍기
+        clicker.forEach((dot:any,index:number)=>{
+          ctx.fillStyle = 'yellow';
+          ctx.fillRect(dot.x,dot.y,dot.width,dot.height);
+        })      
       }
     }
 
@@ -90,13 +100,6 @@ const Game = () => {
       for (let i = 0; i < mosquitoNumber; i++) {
         figuresArray[i] = new Mosquito(); //★★★★★★ 현재 모기들은 배열 안에 있다. Mosquito[0]으로 해서, 모기를 특정하고
       }
-      //  //예시. 총알지우기
-      //  for(let i=0;i<bulletList.length;i++){
-      //   if(bulletList[i].alive){
-      //     bulletList[i].update();
-      //     bulletList[i].checkHit();
-      //   }
-      //  }
     };
 
     function animate() {
@@ -105,7 +108,7 @@ const Game = () => {
       ctx.fillStyle = "rgb(211,211,211)"; //캔버스 배경 색깔 - lightgray
       ctx.fillRect(0, 0, width, height);
       for (let i = 0; i < mosquitoNumber; i++) {
-        figuresArray[i].draw(aliveRef.current);
+        figuresArray[i].draw();
       }
       window.requestAnimationFrame(animate);
     }
@@ -114,17 +117,18 @@ const Game = () => {
     animate();
     //★★★★
     function deleteFigure() {
-      console.log("figuresArray",figuresArray);
       newFiguresArray = figuresArray.filter(
         (figure: any) =>
-          // !(
-          //   mouseCoordinate.x > figure.x &&
-          //   mouseCoordinate.x < figure.x + figure.size &&
-          //   mouseCoordinate.y > figure.y &&
-          //   mouseCoordinate.y < figure.y + figure.size
-          // )
-          {}
-      );
+        !(
+            mouseCoordinate.x > figure.x &&
+            mouseCoordinate.x < figure.x + figure.size &&
+            mouseCoordinate.y > figure.y &&
+            mouseCoordinate.y < figure.y + figure.size
+          )
+          //{}
+          );
+
+          console.log("figuresArray",figuresArray);
       if (newFiguresArray.length < figuresArray.length) {
         count += figuresArray.length - newFiguresArray.length;
       }
@@ -132,8 +136,23 @@ const Game = () => {
       console.log("newFiguresArray",newFiguresArray);
     }
 
+    
     document.addEventListener("click", (e) => {
-      console.log("click document");
+      const rect= canvas.getBoundingClientRect();
+      //console.log(e.x); //clientX값
+      //console.log(e.y); //clientY값
+      //console.log(rect.top);
+      //console.log(rect.left);
+
+      const mouseClick = {
+        x:e.x-rect.left,
+        y:e.y-rect.top,
+        width:5,
+        height:5
+        //size:10
+      }
+      clicker.push(mouseClick);
+      console.log("mouseClick",mouseClick);
       mouseCoordinate.x = e.x;
       mouseCoordinate.y = e.y;
       deleteFigure();
