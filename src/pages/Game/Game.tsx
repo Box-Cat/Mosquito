@@ -1,184 +1,151 @@
 import React, { useState, useEffect, useRef } from "react";
 import imgMosquito from "./images/mosquito1.png";
 import imgDeath from "./images/death.png";
-import imgGameover from "./images/gameover.png";
-import StartButton from "./StartButton";
-import Timer from "./Timer";
-import Score from "./Score";
+import '../../App.css';
+interface mosquito{
+  mosquitoCount: number;
+  speed: number;
+  MosquitoArr: any[]
+}
 
-const Game = () => {
+function Game() {
+  //변수, 객체 선언
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const aliveRef = useRef<boolean>(true);
-  //const width: number = 1600;
-  //const height: number = 800;
-  const width = window.innerWidth;
-  const height = window.innerHeight;
-  const size = 0; //삭제 예정
+  const width: number = 1000;
+  const height: number = 700;
+  const clicker: any[] = [];
+  const game = {
+    req: '',score:0
+  };
+  const mosquito : mosquito = {
+    mosquitoCount: 10
+    , speed: 1
+    , MosquitoArr: []
+  };
 
   const onStart = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+    canvas.style.cursor = 'crosshair'; //마우스커서
 
-    canvas.width = width;
-    canvas.height = height;
-    let mosquitoImage = new Image();
-    let deathImage = new Image();
-    let gameoverImage = new Image();
-    mosquitoImage.src = imgMosquito;
-    deathImage.src = imgDeath;
-    gameoverImage.src = imgGameover;
-
-
-    //추가▽
-    let gameover = true;
-    let figuresArray: any = [];
-    let newFiguresArray: any = [];
-    let count = 0;
-    const mouseCoordinate = {
-      x: NaN,
-      y: NaN,
-    };
-    const clicker : any= [];      
-    //추가△
-
-    class Mosquito {
-      x: number;
-      y: number;
-      mosquitoWidth: number;
-      mosquitoHeight: number;
-      directionX: number;
-      directionY: number;
-      dx: number;
-      dy: number;
- 
-
-      constructor() {
-        this.mosquitoWidth = 84;
-        this.mosquitoHeight = 84;
-        this.x = Math.floor(Math.random() * (width - this.mosquitoWidth)); //모기 시작 X좌표
-        this.y = Math.floor(Math.random() * (height - this.mosquitoHeight)); //모기 시작 Y좌표
-        this.directionX = Math.floor(Math.random() * 2 - 1) >= 0 ? 1 : -1; //모기 비행 방향
-        this.directionY = Math.floor(Math.random() * 2 - 1) >= 0 ? 1 : -1;
-
-        this.dx = this.directionX*(Math.random()*2); //모기 비행 속도
-        this.dy = this.directionY*(Math.random()*2); //10으로
-        //this.dx = 0; //모기 비행 속도 - 클릭 구현할 때까지, 임시로 0
-        //this.dy = 0;
-      }
-
-      draw() {
-        //벽 충돌 구현
-        this.y += this.dy;
-        this.x += this.dx;
-        if (
-          this.y + this.dy >= height - this.mosquitoHeight ||
-          this.y + this.dy < -1
-        ) {
-          this.dy *= -1;
-        } else if (
-          this.x + this.dx >= width - this.mosquitoWidth ||
-          this.x + this.dx < -1
-        ) {
-          this.dx *= -1;
-        }
-        //모기 그리기
-        if (!ctx) return;
-        ctx.drawImage(mosquitoImage, this.x, this.y);
-
-        //노란 점 찍기
-        clicker.forEach((dot:any,index:number)=>{
-          ctx.fillStyle = 'yellow';
-          ctx.fillRect(dot.x,dot.y,dot.width,dot.height);
-        })      
-      }
-    }
-
-    const mosquitoNumber = 5; // 총 모기 마릿수.
-    const init = () => {
-      for (let i = 0; i < mosquitoNumber; i++) {
-        figuresArray[i] = new Mosquito(); //★★★★★★ 현재 모기들은 배열 안에 있다. Mosquito[0]으로 해서, 모기를 특정하고
-      }
-    };
-
-    function animate() {
+    //함수선언
+    const draw = () => {
       if (!canvas) return;
       if (!ctx) return;
-      ctx.fillStyle = "rgb(211,211,211)"; //캔버스 배경 색깔 - lightgray
-      ctx.fillRect(0, 0, width, height);
-      for (let i = 0; i < mosquitoNumber; i++) {
-        figuresArray[i].draw();
+      ctx.fillStyle = 'rgb(211,211,211)';
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.beginPath();
+
+      if (mosquito.MosquitoArr.length < mosquito.mosquitoCount) {
+        //새로운 모기 생성
+        mosquitoInfoMaker();
       }
-      window.requestAnimationFrame(animate);
+
+      clicker.forEach((dot, index) => {
+        ctx.strokeStyle = 'black'; //마우스 원
+        ctx.beginPath();
+        ctx.arc(dot.x, dot.y, dot.size, 0, 2 * Math.PI); 
+        ctx.stroke();
+        dot.size -= 1;
+        if (dot.size < 1) {
+          clicker.splice(index, 1);
+        }
+      })
+
+      mosquito.MosquitoArr.forEach((bub, index) => {
+      
+        //모기 튕기기
+        bub.y -= bub.dy*bub.speed;
+        bub.x -= bub.dx*bub.speed;
+        if (bub.y >= height - bub.size ||  bub.y < 0) {
+          bub.dy *= -1;
+        } else if ( bub.x >= width - bub.size ||  bub.x < 0) {
+          bub.dx *= -1;
+        }
+
+        clicker.forEach((dot) => {
+          if(colCheck(bub, dot)){
+            let popped = mosquito.MosquitoArr.splice(index, 1);
+            let val = Math.ceil(popped[0].size);
+            let val1 = Math.ceil(popped[0].speed);
+            game.score += val + (val1*3);
+          }
+        })
+        drawMosquito(bub.x, bub.y, bub.size);
+      })
+
+      requestAnimationFrame(draw);
     }
 
-    init();
-    animate();
-    //★★★★
-    function deleteFigure() {
-      newFiguresArray = figuresArray.filter(
-        (figure: any) =>
-        !(
-            mouseCoordinate.x > figure.x &&
-            mouseCoordinate.x < figure.x + figure.size &&
-            mouseCoordinate.y > figure.y &&
-            mouseCoordinate.y < figure.y + figure.size
-          )
-          //{}
-          );
-
-          console.log("figuresArray",figuresArray);
-      if (newFiguresArray.length < figuresArray.length) {
-        count += figuresArray.length - newFiguresArray.length;
-      }
-      figuresArray = newFiguresArray;
-      console.log("newFiguresArray",newFiguresArray);
+    function mosquitoInfoMaker() {
+      if (!canvas) return;
+      if (!ctx) return;
+      let mosquitoSize = 84
+      let xPos = Math.random() * (canvas.width - mosquitoSize);
+      let yPos = Math.random() * (canvas.height - mosquitoSize);
+      let directionX = Math.floor(Math.random() * 2 - 1) >= 0 ? 1 : -1; //모기 비행 방향
+      let directionY = Math.floor(Math.random() * 2 - 1) >= 0 ? 1 : -1;
+      mosquito.MosquitoArr.push({
+        x: xPos,
+        y: yPos,
+        size: mosquitoSize,
+        speed : Math.floor(Math.random()*5)+mosquito.speed,
+        dx: directionX,
+        dy: directionY
+      });
     }
 
-    
-    document.addEventListener("click", (e) => {
-      const rect= canvas.getBoundingClientRect();
-      //console.log(e.x); //clientX값
-      //console.log(e.y); //clientY값
-      //console.log(rect.top);
-      //console.log(rect.left);
+    function drawMosquito(xPos: number, yPos: number, mosquitoSize: number) {
+      if (!canvas) return;
+      if (!ctx) return;
 
-      const mouseClick = {
-        x:e.x-rect.left,
-        y:e.y-rect.top,
-        width:5,
-        height:5
-        //size:10
+      //배경 모기 그리기
+      let mosquitoImage = new Image();
+      mosquitoImage.src = imgMosquito;
+      ctx.drawImage(mosquitoImage, xPos, yPos);
       }
-      clicker.push(mouseClick);
-      console.log("mouseClick",mouseClick);
-      mouseCoordinate.x = e.x;
-      mouseCoordinate.y = e.y;
-      deleteFigure();
-    });
-  };
 
-  //  function clickMosquito() {
-  //    window.addEventListener("click", (event) => {
-  //    });
-  //  }
+      canvas.addEventListener('click', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const mouseClick = {
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top,
+          size: 50
+        }
+        clicker.push(mouseClick);
+        mosquito.MosquitoArr.forEach((bub, index) => {
+            if(colCheck(bub, mouseClick)){
+              mosquito.MosquitoArr.splice(index, 1);
+            }
+        })
+      })
 
-  useEffect(() => {
-    onStart(); //클래스까지 내포한 onStart가 옳을까?
+    function colCheck(a:any, b:any) {
+      let hit = a.x < b.x + b.size && a.x + a.size > b.x && a.y < b.y + b.size && a.y + a.size > b.y;
+      return hit;
+    }
 
-    //console.log("deathOn",deathOn);
-  }, []);
+    //함수 호출
+    draw();  
+  }
+  
+
+  useEffect(()=>{
+    onStart();
+  },[])
 
   //1.로그인을 해야만, 게임을 할 수 있게 할 것
-  //3.모기를 클릭하면, 모기의 눈이 X로 변할 것.
-  //5.시간이 멈추면, 등수 등록할 것(아이디, 걸린 시간)
-  //6.게임 시작버튼 만들 것
-  //6-1.게임을 시작하면 '시작버튼'이 '재시작'이 될 것
-  //6-2.'재시작'하면 재시작할 것
-  //6-3.시작버튼 누르면 모기가 움직이기 시작함
-  //7.게임이 멈추면, 게임오버 이미지와, 게임 등수(아이디, 걸린 시간)가 출력될 것
-  //8. 게임시작하면, 마우스 포인터를 '모기채'로 바꿀 것
+  //2.모기를 클릭하면, 모기의 눈이 X로 변할 것.
+  //3.시간이 멈추면, 등수 등록할 것(아이디, 걸린 시간)
+  //4.게임 시작버튼 만들 것
+  //5.게임을 시작하면 '시작버튼'이 '재시작'이 될 것
+  //6.'재시작'하면 재시작할 것
+  //7.시작버튼 누르면 모기가 움직이기 시작함
+  //8.게임이 멈추면, 게임오버 이미지와, 게임 등수(아이디, 걸린 시간)가 출력될 것
+  //9.게임시작하면, 마우스 포인터를 '모기채'로 바꿀 것
+
   return (
     <div className="canvasBox">
       <canvas
@@ -186,17 +153,12 @@ const Game = () => {
         height={height}
         width={width}
         className="canvas"
-        //켄버스를 취소하고... return에 모기 그림을 그리고, 이것을 Id로 잡아서 편집??
-        //onMouseMove={(event)=>{console.log("마우스가 움직인다.")}}
-        //onClick={(event)=>{console.log(event.target)}} //event.target
       />
-      <StartButton />
-      <div>
-        <Score />
-        <Timer />
-      </div>
+      <p>
+         This page is working
+       </p>
     </div>
   );
-};
+}
 
 export default Game;
