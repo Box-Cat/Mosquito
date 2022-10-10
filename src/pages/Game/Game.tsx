@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
-import imgMosquito from "./images/mosquito1.png";
-import imgDeath from "./images/death.png";
+import imgMosquito0 from "./images/mosquito0.png";
+import imgMosquito1 from "./images/mosquito1.png";
+import imgMosquito2 from "./images/mosquito2.png";
+import imgMosquito3 from "./images/mosquito3.png";
 import '../../App.css';
 interface mosquito{
   mosquitoCount: number;
@@ -14,6 +16,9 @@ function Game() {
   const width: number = 1000;
   const height: number = 700;
   const clicker: any[] = [];
+  let mosquitoImgArr : any[] = [];
+  let mosquitoImgArrTemp : any[] = [];
+  let imgNumber = 4;
   const game = {
     req: '',score:0
   };
@@ -22,6 +27,14 @@ function Game() {
     , speed: 1
     , MosquitoArr: []
   };
+
+  
+  //모기 이미지 입력
+  mosquitoImgArrTemp = [imgMosquito0,imgMosquito1,imgMosquito2,imgMosquito3];
+  for(let i=0;i<imgNumber;i++){
+    mosquitoImgArr[i] = new Image();
+    mosquitoImgArr[i].src = mosquitoImgArrTemp[i]
+  }
 
   const onStart = () => {
     const canvas = canvasRef.current;
@@ -73,7 +86,7 @@ function Game() {
             game.score += val + (val1*3);
           }
         })
-        drawMosquito(bub.x, bub.y, bub.size);
+        drawMosquito(bub.img, bub.x, bub.y); 
       })
 
       requestAnimationFrame(draw);
@@ -87,7 +100,9 @@ function Game() {
       let yPos = Math.random() * (canvas.height - mosquitoSize);
       let directionX = Math.floor(Math.random() * 2 - 1) >= 0 ? 1 : -1; //모기 비행 방향
       let directionY = Math.floor(Math.random() * 2 - 1) >= 0 ? 1 : -1;
+      let imgNum : number = Math.floor(Math.random()*imgNumber);
       mosquito.MosquitoArr.push({
+        img: mosquitoImgArr[imgNum],
         x: xPos,
         y: yPos,
         size: mosquitoSize,
@@ -97,30 +112,26 @@ function Game() {
       });
     }
 
-    function drawMosquito(xPos: number, yPos: number, mosquitoSize: number) {
+    function drawMosquito(img:any, xPos: number, yPos: number) {
       if (!canvas) return;
       if (!ctx) return;
+      ctx.drawImage(img, xPos, yPos);
+    }
 
-      //배경 모기 그리기
-      let mosquitoImage = new Image();
-      mosquitoImage.src = imgMosquito;
-      ctx.drawImage(mosquitoImage, xPos, yPos);
+    canvas.addEventListener('click', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const mouseClick = {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+        size: 50
       }
-
-      canvas.addEventListener('click', (e) => {
-        const rect = canvas.getBoundingClientRect();
-        const mouseClick = {
-          x: e.clientX - rect.left,
-          y: e.clientY - rect.top,
-          size: 50
-        }
-        clicker.push(mouseClick);
-        mosquito.MosquitoArr.forEach((bub, index) => {
-            if(colCheck(bub, mouseClick)){
-              mosquito.MosquitoArr.splice(index, 1);
-            }
-        })
+      clicker.push(mouseClick);
+      mosquito.MosquitoArr.forEach((bub, index) => {
+          if(colCheck(bub, mouseClick)){
+            mosquito.MosquitoArr.splice(index, 1);
+          }
       })
+    })
 
     function colCheck(a:any, b:any) {
       let hit = a.x < b.x + b.size && a.x + a.size > b.x && a.y < b.y + b.size && a.y + a.size > b.y;
@@ -136,15 +147,14 @@ function Game() {
     onStart();
   },[])
 
-  //1.로그인을 해야만, 게임을 할 수 있게 할 것
-  //2.모기를 클릭하면, 모기의 눈이 X로 변할 것.
-  //3.시간이 멈추면, 등수 등록할 것(아이디, 걸린 시간)
-  //4.게임 시작버튼 만들 것
-  //5.게임을 시작하면 '시작버튼'이 '재시작'이 될 것
-  //6.'재시작'하면 재시작할 것
-  //7.시작버튼 누르면 모기가 움직이기 시작함
-  //8.게임이 멈추면, 게임오버 이미지와, 게임 등수(아이디, 걸린 시간)가 출력될 것
-  //9.게임시작하면, 마우스 포인터를 '모기채'로 바꿀 것
+  //1.로그인을 해야만, 게임을 할 수 있게 할 것 >> 로그인 페이지 부터(redux)
+  //2.시간이 멈추면, 등수 등록할 것(아이디, 걸린 시간)
+  //3.게임 시작버튼 만들 것
+  //4.게임을 시작하면 '시작버튼'이 '재시작'이 될 것
+  //5.'재시작'하면 재시작할 것
+  //6.시작버튼 누르면 모기가 움직이기 시작함
+  //7.게임이 멈추면, 게임오버 이미지와, 게임 등수(아이디, 걸린 시간)가 출력될 것
+  //8.게임시작하면, 마우스 포인터를 '모기채'로 바꿀 것
 
   return (
     <div className="canvasBox">
@@ -154,9 +164,9 @@ function Game() {
         width={width}
         className="canvas"
       />
-      <p>
-         This page is working
-       </p>
+      <div>
+        <button id="startGame">Start game</button>
+      </div>
     </div>
   );
 }
