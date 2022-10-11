@@ -5,6 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Game from './pages/game/Game';
+import Timer from './common/components/Timer';
 import { createGlobalStyle } from "styled-components";
 
 export const GlobalStyle = createGlobalStyle`
@@ -23,6 +24,7 @@ function App() {
        <Routes>
           <Route path="/" element={<Home/>}/>
           <Route path="/game" element={<Game/>}/>
+          <Route path="/timer" element={<Timer/>}/>
        </Routes>
     </div>
   );
