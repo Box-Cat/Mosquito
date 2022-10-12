@@ -23,6 +23,8 @@ function Game() {
   let mosquitoImgArr: any[] = [];
   let mosquitoImgArrTemp: any[] = [];
   let imgNumber = 4;
+  let startTime = new Date();
+  let elapsed : number; 
 
   const game = {
     req: '', score: 0
@@ -84,33 +86,20 @@ function Game() {
         } else if (bub.x >= width - bub.size || bub.x < 0) {
           bub.dx *= -1;
         }
-
-        // clicker.forEach((dot) => { // 없어도 마우스 클릭 삭제 잘됨
-        //   if (colCheck(bub, dot)) {
-        //     let popped = mosquito.MosquitoArr.splice(index, 1);
-        //     let val = Math.ceil(popped[0].size);
-        //     let val1 = Math.ceil(popped[0].speed);
-        //     console.log("popped", popped);
-        //     console.log("val", val);
-        //     console.log("val1", val1);
-        //     game.score += val + (val1 * 3);
-        //   }
-        // })
+       
         drawMosquito(bub.img, bub.x, bub.y);
       })
-
-      //시간표시
-
+      
+      drawElapsedTime()//시간표시
       ctx.fillStyle = 'rgba(0,0,0,0.5)';
       ctx.fillRect(0, 20, canvas.width, 40);
       ctx.beginPath();
       ctx.fillStyle = 'white';
       ctx.font = '36px serif';
       ctx.textAlign = 'center';
-      let tempOutput = `SCORE : ${game.score}, ${seconds}`;
+      let tempOutput = `SCORE : ${game.score}, ${elapsed}seconds`; 
       ctx.fillText(tempOutput, canvas.width / 2, 50);
-
-      requestAnimationFrame(draw);
+      requestAnimationFrame(draw); 
     }
 
     function mosquitoInfoMaker() {
@@ -162,29 +151,18 @@ function Game() {
       return hit;
     }
 
+    function drawElapsedTime() {
+        elapsed = 60-Math.floor((new Date().getTime() - startTime.getTime()) / 1000);
+        console.log(elapsed);
+        return elapsed;
+     }  
+
     //함수 호출
     draw();
   }
 
-  function timer() {
-    const interval = setInterval(() => {
-      setSeconds(seconds =>
-        seconds === 0 ? seconds = 0 : seconds - 1
-      );
-    }, 1000);
-    return () => clearInterval(interval);
-  }
-
-
   useEffect(() => {
     onStart();
-    timer()
-    // const interval = setInterval(() => {
-    //   setSeconds(seconds =>
-    //     seconds === 0 ? seconds = 0 : seconds - 1
-    //   );
-    // }, 1000);
-    // return () => clearInterval(interval);
   }, [])
 
   //1.로그인을 해야만, 게임을 할 수 있게 할 것 >> 로그인 페이지 부터(redux)
