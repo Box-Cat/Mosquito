@@ -152,8 +152,8 @@ function Game() {
     }
 
     function drawElapsedTime() {
-        elapsed = 60-Math.floor((new Date().getTime() - startTime.getTime()) / 1000);
-        console.log(elapsed);
+        if(elapsed<1)return
+        elapsed = 60-Math.floor((new Date().getTime() - startTime.getTime()) / 1000); //마이너스 시간 막기
         return elapsed;
      }  
 
