@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
+import Button from "common/components/Button";
 import imgMosquito0 from "./images/mosquito0.png";
 import imgMosquito1 from "./images/mosquito1.png";
 import imgMosquito2 from "./images/mosquito2.png";
 import imgMosquito3 from "./images/mosquito3.png";
 import '../../App.css';
-import Timer from '../../common/components/Timer';
 
 interface mosquito {
   mosquitoCount: number;
@@ -14,8 +14,10 @@ interface mosquito {
 
 function Game() {
   //변수, 객체 선언
-  const [seconds, setSeconds] = useState(60);
-  const [count, setCount] = useState(0);
+  const [start, setStart] = useState<boolean>(true);
+  const [gameover, setGameover] = useState<boolean>(false);
+  const [restart, setRestart] = useState<boolean>(false);
+  let [elapsed, setElapsed] = useState<number>(3); //체크
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const width: number = 1000;
   const height: number = 700;
@@ -24,10 +26,9 @@ function Game() {
   let mosquitoImgArrTemp: any[] = [];
   let imgNumber = 4;
   let startTime = new Date();
-  let elapsed : number; 
 
-  const game = {
-    req: '', score: 0
+  const gameResult = {
+    score: 0
   };
   const mosquito: mosquito = {
     mosquitoCount: 10
@@ -44,6 +45,7 @@ function Game() {
   }
 
   const onStart = () => {
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -77,19 +79,23 @@ function Game() {
       mosquito.MosquitoArr.forEach((bub, index) => {
 
         //모기 벽 튕기기
-        bub.y -= bub.dy * bub.speed; //원본
-        bub.x -= bub.dx * bub.speed; //원본
-        //bub.y -= 0; //테스트
-        //bub.x -= 0; //테스트
+        if (elapsed < 1) {
+          bub.y -= 0; 
+          bub.x -= 0; 
+        }else{
+          bub.y -= bub.dy * bub.speed; //원본
+          bub.x -= bub.dx * bub.speed; //원본
+        }
+
         if (bub.y >= height - bub.size || bub.y < 0) {
           bub.dy *= -1;
         } else if (bub.x >= width - bub.size || bub.x < 0) {
           bub.dx *= -1;
         }
-       
+
         drawMosquito(bub.img, bub.x, bub.y);
       })
-      
+
       drawElapsedTime()//시간표시
       ctx.fillStyle = 'rgba(0,0,0,0.5)';
       ctx.fillRect(0, 20, canvas.width, 40);
@@ -97,9 +103,16 @@ function Game() {
       ctx.fillStyle = 'white';
       ctx.font = '36px serif';
       ctx.textAlign = 'center';
-      let tempOutput = `SCORE : ${game.score}, ${elapsed}seconds`; 
+      let tempOutput = `SCORE : ${gameResult.score}, ${elapsed}seconds`;
       ctx.fillText(tempOutput, canvas.width / 2, 50);
-      requestAnimationFrame(draw); 
+
+      if (elapsed < 1){
+        setGameover(true);
+        setRestart(true);
+        console.log("게임오버");
+        return;
+      } 
+      if (start === false) requestAnimationFrame(draw);
     }
 
     function mosquitoInfoMaker() {
@@ -139,8 +152,8 @@ function Game() {
       mosquito.MosquitoArr.forEach((bub, index) => {
         if (colCheck(bub, mouseClick)) {
           mosquito.MosquitoArr.splice(index, 1);
-          console.log("나니?")
-          game.score += 1;
+          if (elapsed < 1) return
+          gameResult.score += 1;
         }
       })
     })
@@ -152,22 +165,26 @@ function Game() {
     }
 
     function drawElapsedTime() {
-        if(elapsed<1)return
-        elapsed = 60-Math.floor((new Date().getTime() - startTime.getTime()) / 1000); //마이너스 시간 막기
-        return elapsed;
-     }  
+      if (elapsed < 1) return
+      elapsed = 3 - Math.floor((new Date().getTime() - startTime.getTime()) / 1000); //체크
+      return elapsed;
+    }
 
     //함수 호출
     draw();
   }
 
+  function toggleStart() {
+    if (start === false) setStart(true);
+    else setStart(false);
+  }
+
   useEffect(() => {
     onStart();
-  }, [])
+  }, [start])
 
   //1.로그인을 해야만, 게임을 할 수 있게 할 것 >> 로그인 페이지 부터(redux)
   //2.시간이 멈추면, 등수 등록할 것(아이디, 걸린 시간)
-  //3.게임 시작버튼 만들 것
   //4.게임을 시작하면 '시작버튼'이 '재시작'이 될 것
   //5.'재시작'하면 재시작할 것
   //6.시작버튼 누르면 모기가 움직이기 시작함
@@ -183,9 +200,7 @@ function Game() {
         className="canvas"
       />
       <div>
-        <button id="startGame">Start game</button>
-        <Timer />
-        SCORE: {count}
+        {start === true ? <Button onClick={toggleStart} name="Start Game" /> : null}
       </div>
     </div>
   );
