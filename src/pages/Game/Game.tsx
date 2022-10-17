@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Button from "common/components/Button";
+import Board from "common/components/Board";
 import imgMosquito0 from "./images/mosquito0.png";
 import imgMosquito1 from "./images/mosquito1.png";
 import imgMosquito2 from "./images/mosquito2.png";
@@ -15,8 +16,10 @@ interface mosquito {
 function Game() {
   //변수, 객체 선언
   const [start, setStart] = useState<boolean>(true);
+  const useResultRef = useRef<number>(0);
+  //const [result, setResult] = useState<number>(0);
+  const [resultBoard, setResultBoard] = useState<boolean>(false);
   const [gameover, setGameover] = useState<boolean>(false);
-  const [restart, setRestart] = useState<boolean>(false);
   let [elapsed, setElapsed] = useState<number>(3); //체크
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const width: number = 1000;
@@ -108,8 +111,9 @@ function Game() {
 
       if (elapsed < 1){
         setGameover(true);
-        setRestart(true);
         console.log("게임오버");
+        useResultRef.current=gameResult.score
+        setResultBoard(true);
         return;
       } 
       if (start === false) requestAnimationFrame(draw);
@@ -199,9 +203,9 @@ function Game() {
         width={width}
         className="canvas"
       />
-      <div>
+      <div></div>
         {start === true ? <Button onClick={toggleStart} name="Start Game" /> : null}
-      </div>
+        {resultBoard === true ? <Board  score={useResultRef.current} /> : null}
     </div>
   );
 }
