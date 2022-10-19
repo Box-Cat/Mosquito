@@ -25,14 +25,4 @@ const StyledBoard = styled.button`
    padding: 5px;
 `;
 
-// const FlexBox = styled.div`
-//     display: flex;
-//     flex-wrap: wrap;
-//     justify-content:center;
-
-//     .flex-1{
-//         flex: 1;
-//     }
-// `
-
 export default Board

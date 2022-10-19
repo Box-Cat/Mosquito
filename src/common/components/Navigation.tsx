@@ -23,6 +23,12 @@ const Navigation = () => {
                 <Nav.Link as={Link} to="/">
                   모기 게시판
                 </Nav.Link>
+                <Nav.Link as={Link} to="/signup">
+                  회원가입
+                </Nav.Link>
+                <Nav.Link as={Link} to="/login">
+                  로그인
+                </Nav.Link>
               </Nav>
               <Form className="d-flex">
                 <Form.Control
